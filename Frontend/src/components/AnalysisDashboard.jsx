@@ -7,6 +7,9 @@ import {
   FiBookmark,
 } from "react-icons/fi";
 
+import ScoreChart from "./ScoreChart";
+import ScoreDonut from "./ScoreDonut";
+
 const AnalysisDashboard = ({ analysis }) => {
   if (!analysis) return null;
 
@@ -81,20 +84,19 @@ const AnalysisDashboard = ({ analysis }) => {
       </div>
 
       {/* Score Cards Grid - Premium Layout */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <ScoreCard
-          label="Overall Score"
-          score={analysis.overallScore}
-          icon={FiTrendingUp}
-          gradient={getScoreColor(analysis.overallScore)}
-        />
-        <ScoreCard
-          label="ATS Score"
-          score={analysis.atsScore}
-          icon={FiTarget}
-          gradient={getScoreColor(analysis.atsScore)}
-        />
-      </div>
+<div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+  <ScoreDonut
+    title="Overall Score"
+    score={analysis.overallScore}
+  />
+
+  <ScoreDonut
+    title="ATS Score"
+    score={analysis.atsScore}
+  />
+</div>
+
+
 
       {/* Strengths Section */}
       <div className="card p-10 space-y-8 bg-linear-to-br from-green-50 to-emerald-50 dark:from-green-900/10 dark:to-emerald-900/10 border border-green-200 dark:border-green-800/30">
