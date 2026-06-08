@@ -78,7 +78,31 @@ const getAllReports = async (req, res) => {
   }
 };
 
+const deleteReport = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const report = await ResumeAnalysis.findByIdAndDelete(id);
+
+    if (!report) {
+      return res.status(404).json({
+        message: "Report not found",
+      });
+    }
+
+    res.status(200).json({
+      message: "Report deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to delete report",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   analyzeResume,
   getAllReports,
+  deleteReport,
 };

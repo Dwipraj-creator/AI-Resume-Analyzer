@@ -20,3 +20,9 @@ export const getReports = async () => {
   const response = await API.get("/resume/reports");
   return response.data;
 };
+
+export const deleteReport = async(id)=>{
+    const response=await API.delete(`/resume/reports/${id}`)
+    return response.data
+}
+

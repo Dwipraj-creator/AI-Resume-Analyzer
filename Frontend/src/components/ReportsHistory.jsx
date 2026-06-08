@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { FiClock, FiBarChart2, FiTarget, FiChevronRight } from "react-icons/fi";
-import { getReports } from "../api/resumeApi";
+import { FiClock, FiBarChart2, FiTarget, FiChevronRight,FiTrash2 } from "react-icons/fi";
+import { getReports,deleteReport, } from "../api/resumeApi";
+
 
 const ReportsHistory = ({ setAnalysis }) => {
   const [reports, setReports] = useState([]);
@@ -28,6 +29,8 @@ const ReportsHistory = ({ setAnalysis }) => {
     return "badge-error";
   };
 
+
+
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
@@ -35,6 +38,18 @@ const ReportsHistory = ({ setAnalysis }) => {
       day: "numeric",
     });
   };
+
+  const handleDelete = async (id) => {
+  try {
+    await deleteReport(id);
+
+    setReports((prev) =>
+      prev.filter((report) => report._id !== id)
+    );
+  } catch (error) {
+    console.log(error);
+  }
+};
 
   if (loading) {
     return (
@@ -144,22 +159,46 @@ const ReportsHistory = ({ setAnalysis }) => {
               </div>
 
               {/* Status Badge & Date */}
-              <div className="flex items-center justify-between pt-4 border-t border-slate-200/50 dark:border-slate-700/50">
-                <span
-                  className={`badge ${getScoreBadgeColor(report.overallScore)}`}
-                >
-                  {report.overallScore >= 80
-                    ? "✨ Excellent"
-                    : report.overallScore >= 60
-                      ? "⭐ Good"
-                      : "⚠️ Needs Work"}
-                </span>
-                {report.createdAt && (
-                  <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                    {formatDate(report.createdAt)}
-                  </span>
-                )}
-              </div>
+             <div className="flex items-center justify-between pt-4 border-t border-slate-200/50 dark:border-slate-700/50">
+
+  <span
+    className={`badge ${getScoreBadgeColor(report.overallScore)}`}
+  >
+    {report.overallScore >= 80
+      ? "✨ Excellent"
+      : report.overallScore >= 60
+      ? "⭐ Good"
+      : "⚠️ Needs Work"}
+  </span>
+
+  <div className="flex items-center gap-3">
+
+    {report.createdAt && (
+      <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+        {formatDate(report.createdAt)}
+      </span>
+    )}
+
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+
+        const confirmDelete = window.confirm(
+          "Delete this report?"
+        );
+
+        if (confirmDelete) {
+          handleDelete(report._id);
+        }
+      }}
+      className="p-2 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50 transition"
+    >
+      <FiTrash2 size={16} />
+    </button>
+
+  </div>
+
+</div>
             </div>
           ))}
         </div>
