@@ -27,13 +27,13 @@ const analyzeResume = async (req, res) => {
     console.log("N8N RESPONSE:", JSON.stringify(n8nResponse.data, null, 2));
 
     const analysis = Array.isArray(n8nResponse.data)
-  ? n8nResponse.data[0]
-  : n8nResponse.data;
-  if (!analysis || !analysis.overallScore) {
-  return res.status(500).json({
-    message: "Invalid response from n8n workflow",
-  });
-}
+      ? n8nResponse.data[0]
+      : n8nResponse.data;
+    if (!analysis || !analysis.overallScore) {
+      return res.status(500).json({
+        message: "Invalid response from n8n workflow",
+      });
+    }
 
     const savedAnalysis = await ResumeAnalysis.create({
       fileName: req.file.originalname,
@@ -46,6 +46,11 @@ const analyzeResume = async (req, res) => {
       improvementSuggestions: analysis.improvementSuggestions,
       suggestedSummary: analysis.suggestedSummary,
       recommendedKeywords: analysis.recommendedKeywords,
+      skillsScore: analysis.skillsScore,
+      projectScore: analysis.projectScore,
+      experienceScore: analysis.experienceScore,
+      educationScore: analysis.educationScore,
+      formattingScore: analysis.formattingScore,
     });
 
     res.status(201).json({
