@@ -36,6 +36,7 @@ const analyzeResume = async (req, res) => {
     }
 
     const savedAnalysis = await ResumeAnalysis.create({
+      user:req.user._id,
       fileName: req.file.originalname,
       resumeText,
       overallScore: analysis.overallScore,
@@ -69,7 +70,12 @@ const analyzeResume = async (req, res) => {
 
 const getAllReports = async (req, res) => {
   try {
-    const reports = await ResumeAnalysis.find().sort({ createdAt: -1 });
+   const reports =
+  await ResumeAnalysis.find({
+    user: req.user._id,
+  }).sort({
+    createdAt: -1,
+  });
 
     res.status(200).json({
       message: "Reports fetched successfully",
@@ -87,7 +93,11 @@ const deleteReport = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const report = await ResumeAnalysis.findByIdAndDelete(id);
+   const report =
+  await ResumeAnalysis.findOneAndDelete({
+    _id: id,
+    user: req.user._id,
+  });
 
     if (!report) {
       return res.status(404).json({

@@ -5,12 +5,13 @@ const {
   getAllReports,
   deleteReport,
 } = require("../controllers/resume.controller");
+const protect = require("../middleware/auth.middleware");
 
 const router = express.Router();
 
-router.post("/analyze", upload.single("resume"), analyzeResume);
+router.post("/analyze", protect,upload.single("resume"), analyzeResume);
 
-router.get("/reports", getAllReports);
-router.delete("/reports/:id",deleteReport)
+router.get("/reports", protect,getAllReports);
+router.delete("/reports/:id",protect,deleteReport)
 
 module.exports = router;
