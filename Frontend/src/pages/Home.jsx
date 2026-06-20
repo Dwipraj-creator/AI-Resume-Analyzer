@@ -4,10 +4,20 @@ import ResumeUpload from "../components/ResumeUpload";
 import AnalysisDashboard from "../components/AnalysisDashboard";
 import ReportsHistory from "../components/ReportsHistory";
 import { useTheme } from "../context/ThemeContext";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   const [analysis, setAnalysis] = useState(null);
   const { isDark, toggleTheme } = useTheme();
+
+  const {logout,user}= useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = ()=>{
+    logout()
+    navigate("/login")
+  }
 
   return (
   
@@ -29,13 +39,31 @@ const Home = () => {
             </div>
           </div>
 
-          <button
-            onClick={toggleTheme}
-            className="p-2.5 rounded-lg bg-slate-100 dark:bg-slate-700/50 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all duration-200 shadow-md hover:shadow-lg"
-            aria-label="Toggle theme"
-          >
-            {isDark ? <FiSun size={20} /> : <FiMoon size={20} />}
-          </button>
+       <div className="flex items-center gap-3">
+  <div className="hidden md:block text-right">
+    <p className="text-sm font-semibold text-slate-900 dark:text-white">
+      {user?.name}
+    </p>
+    <p className="text-xs text-slate-500 dark:text-slate-400">
+      {user?.email}
+    </p>
+  </div>
+
+  <button
+    onClick={handleLogout}
+    className="px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white font-medium transition"
+  >
+    Logout
+  </button>
+
+  <button
+    onClick={toggleTheme}
+    className="p-2.5 rounded-lg bg-slate-100 dark:bg-slate-700/50 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all duration-200 shadow-md hover:shadow-lg"
+    aria-label="Toggle theme"
+  >
+    {isDark ? <FiSun size={20} /> : <FiMoon size={20} />}
+  </button>
+</div>
         </div>
       </header>
 
