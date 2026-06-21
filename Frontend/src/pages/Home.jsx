@@ -1,219 +1,132 @@
 import { useState } from "react";
-import { FiMoon, FiSun, FiUploadCloud } from "react-icons/fi";
+import { FiMoon, FiSun, FiUploadCloud, FiLogOut } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
+
 import ResumeUpload from "../components/ResumeUpload";
 import AnalysisDashboard from "../components/AnalysisDashboard";
 import ReportsHistory from "../components/ReportsHistory";
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   const [analysis, setAnalysis] = useState(null);
-  const { isDark, toggleTheme } = useTheme();
 
-  const {logout,user}= useAuth();
+  const { isDark, toggleTheme } = useTheme();
+  const { logout, user } = useAuth();
+
   const navigate = useNavigate();
 
-  const handleLogout = ()=>{
-    logout()
-    navigate("/login")
-  }
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   return (
-  
-     <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 transition-colors duration-300">
-      {/* Premium Header */}
-      <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/50 dark:bg-linear-to-r dark:from-slate-800/50 dark:to-slate-900/50 border-b border-slate-200/50 dark:border-slate-700/50 shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex items-center justify-between">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
+      <header className="sticky top-0 z-50 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-linear-to-br from-primary-500 to-accent-600 rounded-xl shadow-lg shadow-primary-500/30">
+            <div className="p-3 rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 shadow-lg shadow-blue-500/20">
               <FiUploadCloud className="text-white text-2xl" />
             </div>
+
             <div>
-              <h1 className="text-2xl font-bold bg-linear-to-r from-primary-600 to-accent-600 dark:from-primary-400 dark:to-accent-400 bg-clip-text text-transparent">
+              <h1 className="text-2xl font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 ResumePro
               </h1>
               <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold tracking-wide">
-                AI-POWERED OPTIMIZATION
+                AI Resume Analyzer
               </p>
             </div>
           </div>
 
-       <div className="flex items-center gap-3">
-  <div className="hidden md:block text-right">
-    <p className="text-sm font-semibold text-slate-900 dark:text-white">
-      {user?.name}
-    </p>
-    <p className="text-xs text-slate-500 dark:text-slate-400">
-      {user?.email}
-    </p>
-  </div>
+          <div className="flex items-center gap-3">
+            <div className="hidden md:flex items-center gap-3 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-4 py-2">
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 text-white flex items-center justify-center font-bold">
+                {user?.name?.charAt(0)?.toUpperCase() || "U"}
+              </div>
 
-  <button
-    onClick={handleLogout}
-    className="px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white font-medium transition"
-  >
-    Logout
-  </button>
+              <div className="text-right">
+                <p className="text-sm font-bold text-slate-900 dark:text-white">
+                  {user?.name}
+                </p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  {user?.email}
+                </p>
+              </div>
+            </div>
 
-  <button
-    onClick={toggleTheme}
-    className="p-2.5 rounded-lg bg-slate-100 dark:bg-slate-700/50 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all duration-200 shadow-md hover:shadow-lg"
-    aria-label="Toggle theme"
-  >
-    {isDark ? <FiSun size={20} /> : <FiMoon size={20} />}
-  </button>
-</div>
+            <button
+              onClick={toggleTheme}
+              className="p-3 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition"
+              aria-label="Toggle theme"
+            >
+              {isDark ? <FiSun size={20} /> : <FiMoon size={20} />}
+            </button>
+
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800 dark:hover:bg-red-900/30 font-semibold transition"
+            >
+              <FiLogOut size={18} />
+              <span className="hidden sm:inline">Logout</span>
+            </button>
+          </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        {/* Premium Hero Section */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
         {!analysis && (
-          <div className="text-center mb-16 animate-fadeIn">
-            <div className="inline-block mb-6 px-4 py-2 rounded-full bg-primary-100 dark:bg-primary-900/30 border border-primary-200 dark:border-primary-800">
-              <span className="text-sm font-semibold text-primary-700 dark:text-primary-300">
-                ✨ Powered by Advanced AI & n8n Automation
+          <section className="text-center mb-14">
+            <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+              <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">
+                Powered by AI, n8n Automation & ATS Scoring
               </span>
             </div>
-            <h2 className="text-5xl sm:text-6xl font-black text-slate-900 dark:text-white mb-6 leading-tight">
-              Analyze & Optimize
+
+            <h2 className="text-4xl sm:text-6xl font-black text-slate-900 dark:text-white mb-6 leading-tight">
+              Analyze and Optimize
               <br />
-              <span className="bg-linear-to-r from-primary-600 to-accent-600 dark:from-primary-400 dark:to-accent-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 Your Resume
               </span>
             </h2>
-            <p className="text-xl text-slate-700 dark:text-slate-300 max-w-2xl mx-auto mb-2 font-medium">
-              Get AI-driven insights to improve your chances with ATS systems
-              and recruiters
+
+            <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+              Upload your PDF resume and get ATS-style scores, missing skills,
+              improvement suggestions, and AI-generated keywords.
             </p>
-            <p className="text-slate-600 dark:text-slate-400">
-              Used by 10,000+ job seekers | 94% success rate
-            </p>
-          </div>
+          </section>
         )}
 
-        {/* Upload Section */}
-        <div className="mb-20">
+        <section className="mb-16">
           <ResumeUpload setAnalysis={setAnalysis} />
-        </div>
+        </section>
 
-        {/* Analysis Dashboard */}
         {analysis && (
-          <div className="mb-16 animate-fadeIn">
+          <section className="mb-16">
             <AnalysisDashboard analysis={analysis} />
-          </div>
+          </section>
         )}
 
-        {/* History Section */}
-        <div className="animate-slideIn">
+        <section>
           <ReportsHistory setAnalysis={setAnalysis} />
-        </div>
+        </section>
       </main>
 
-      {/* Premium Footer */}
-      <footer className="bg-white dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700/50 mt-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
-            <div>
-              <h4 className="font-semibold text-slate-900 dark:text-white mb-3">
-                Product
-              </h4>
-              <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-primary-600 dark:hover:text-primary-400"
-                  >
-                    Features
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-primary-600 dark:hover:text-primary-400"
-                  >
-                    Pricing
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold text-slate-900 dark:text-white mb-3">
-                Company
-              </h4>
-              <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-primary-600 dark:hover:text-primary-400"
-                  >
-                    About
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-primary-600 dark:hover:text-primary-400"
-                  >
-                    Blog
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold text-slate-900 dark:text-white mb-3">
-                Legal
-              </h4>
-              <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-primary-600 dark:hover:text-primary-400"
-                  >
-                    Privacy
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-primary-600 dark:hover:text-primary-400"
-                  >
-                    Terms
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold text-slate-900 dark:text-white mb-3">
-                Connect
-              </h4>
-              <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-primary-600 dark:hover:text-primary-400"
-                  >
-                    Twitter
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-primary-600 dark:hover:text-primary-400"
-                  >
-                    LinkedIn
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-slate-200 dark:border-slate-700 pt-8 text-center text-slate-600 dark:text-slate-400 text-sm">
-            <p>
-              © 2024 ResumePro. Built with React & n8n. All rights reserved.
-            </p>
-          </div>
+      <footer className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            © 2026 ResumePro. Built with React, Node.js, MongoDB, n8n and Gemini AI.
+          </p>
+
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            Portfolio project by{" "}
+            <span className="font-semibold text-slate-700 dark:text-slate-300">
+              Dwipraj Dey
+            </span>
+          </p>
         </div>
       </footer>
     </div>
