@@ -1,4 +1,5 @@
 const axios = require("axios");
+const path = require("path");
 const ResumeAnalysis = require("../models/ResumeAnalysis");
 const extractPdfText = require("../utils/extractPdfText");
 const analyzeWithGemini = require("../utils/analyzeWithGemini");
@@ -24,7 +25,11 @@ const analyzeResume = async (req, res) => {
       });
     }
 
-    const resumeText = await extractPdfText(req.file.path);
+    const filePath = req.file.path.startsWith("/")
+      ? req.file.path
+      : path.join(process.cwd(), req.file.path);
+
+    const resumeText = await extractPdfText(filePath);
 
     if (!resumeText || resumeText.trim().length < 50) {
       return res.status(400).json({
