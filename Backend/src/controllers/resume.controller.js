@@ -39,11 +39,16 @@ const analyzeResume = async (req, res) => {
 
     let analysis;
 
-  if (process.env.AI_PROVIDER === "gemini") {
+if (process.env.AI_PROVIDER === "gemini") {
   try {
     analysis = await analyzeWithGemini(resumeText);
   } catch (error) {
-    console.log("Gemini failed. Falling back to n8n...");
+    console.log("Gemini failed:", error.message);
+    console.log("Falling back to n8n...");
+
+    if (!process.env.N8N_WEBHOOK_URL) {
+      throw new Error("N8N_WEBHOOK_URL is missing. Gemini failed and n8n fallback is not configured.");
+    }
 
     analysis = await getAnalysisFromN8n(
       req.file.originalname,
@@ -88,14 +93,17 @@ const analyzeResume = async (req, res) => {
       message: "Resume analyzed successfully",
       data: savedAnalysis,
     });
-  } catch (error) {
-    console.log("Analyze resume error:", error.message);
+ } catch (error) {
+  console.log("Analyze resume full error:", error);
 
-    res.status(500).json({
-      message: "Something went wrong while analyzing resume",
-      error: error.message,
-    });
-  }
+  res.status(500).json({
+    message: "Something went wrong while analyzing resume",
+    error:
+      error.response?.data ||
+      error.message ||
+      JSON.stringify(error),
+  });
+}
 };
 
 const getAllReports = async (req, res) => {
@@ -110,12 +118,17 @@ const getAllReports = async (req, res) => {
       message: "Reports fetched successfully",
       data: reports,
     });
-  } catch (error) {
-    res.status(500).json({
-      message: "Failed to fetch reports",
-      error: error.message,
-    });
-  }
+ } catch (error) {
+  console.log("Analyze resume full error:", error);
+
+  res.status(500).json({
+    message: "Something went wrong while analyzing resume",
+    error:
+      error.response?.data ||
+      error.message ||
+      JSON.stringify(error),
+  });
+}
 };
 
 const deleteReport = async (req, res) => {
@@ -136,12 +149,17 @@ const deleteReport = async (req, res) => {
     res.status(200).json({
       message: "Report deleted successfully",
     });
-  } catch (error) {
-    res.status(500).json({
-      message: "Failed to delete report",
-      error: error.message,
-    });
-  }
+ } catch (error) {
+  console.log("Analyze resume full error:", error);
+
+  res.status(500).json({
+    message: "Something went wrong while analyzing resume",
+    error:
+      error.response?.data ||
+      error.message ||
+      JSON.stringify(error),
+  });
+}
 };
 
 module.exports = {
