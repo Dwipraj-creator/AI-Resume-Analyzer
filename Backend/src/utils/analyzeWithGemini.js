@@ -1,10 +1,17 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const genAI = new GoogleGenerativeAI(
+  process.env.GEMINI_API_KEY
+);
+
+const sleep = (ms) =>
+  new Promise((resolve) =>
+    setTimeout(resolve, ms)
+  );
 
 const analyzeWithGemini = async (resumeText) => {
   const model = genAI.getGenerativeModel({
-    model: "gemini-2.5-flash-lite",
+    model: "gemini-2.5-flash",
   });
 
   const prompt = `
@@ -34,7 +41,34 @@ Return ONLY valid JSON. No markdown.
 }
 `;
 
-  const result = await model.generateContent(prompt);
+  let result;
+
+  for (let i = 0; i < 3; i++) {
+    try {
+      result = await model.generateContent(prompt);
+      break;
+    } catch (error) {
+      console.log(
+        `Gemini attempt ${i + 1} failed:`,
+        error.message
+      );
+
+      if (
+        error.message.includes("503") &&
+        i < 2
+      ) {
+        console.log(
+          "Gemini busy. Retrying in 5 seconds..."
+        );
+
+        await sleep(5000);
+        continue;
+      }
+
+      throw error;
+    }
+  }
+
   const text = result.response.text();
 
   const cleanedText = text
