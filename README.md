@@ -9,8 +9,8 @@ The project includes authentication, PDF upload, AI-powered analysis, report his
 
 ## Live Demo
 
-Frontend: Coming soon
-Backend API: Coming soon
+Frontend: https://ai-resume-analyzer-zeta-one.vercel.app
+Backend API: https://ai-resume-analyzer-npxu.onrender.com
 
 ---
 
