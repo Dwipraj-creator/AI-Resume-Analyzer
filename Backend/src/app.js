@@ -18,4 +18,13 @@ app.get("/", (req, res) => {
 app.use("/api/resume", resumeRoutes);
 app.use("/api/auth",authRoutes)
 
+app.use((error, req, res, next) => {
+  console.error("GLOBAL ERROR:", error);
+
+  res.status(500).json({
+    message: "Global server error",
+    error: error.message,
+  });
+});
+
 module.exports = app;
