@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: "https://ai-resume-analyzer-npxu.onrender.com",
 });
 
 export const registerUser = async (userData) => {
