@@ -39,11 +39,23 @@ const analyzeResume = async (req, res) => {
 
     let analysis;
 
-    if (process.env.AI_PROVIDER === "gemini") {
-      analysis = await analyzeWithGemini(resumeText);
-    } else {
-      analysis = await getAnalysisFromN8n(req.file.originalname, resumeText);
-    }
+  if (process.env.AI_PROVIDER === "gemini") {
+  try {
+    analysis = await analyzeWithGemini(resumeText);
+  } catch (error) {
+    console.log("Gemini failed. Falling back to n8n...");
+
+    analysis = await getAnalysisFromN8n(
+      req.file.originalname,
+      resumeText
+    );
+  }
+} else {
+  analysis = await getAnalysisFromN8n(
+    req.file.originalname,
+    resumeText
+  );
+}
 
     if (!analysis || analysis.overallScore === undefined) {
       return res.status(500).json({
