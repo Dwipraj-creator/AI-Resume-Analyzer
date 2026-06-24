@@ -1,32 +1,35 @@
 const multer = require("multer");
+const fs = require("fs");
 const path = require("path");
 
+const uploadDir = path.join(process.cwd(), "uploads");
+
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/");
+  destination: (req, file, cb) => {
+    cb(null, uploadDir);
   },
 
-  filename: function (req, file, cb) {
-    const uniqueName = Date.now() + "-" + file.originalname;
-    cb(null, uniqueName);
+  filename: (req, file, cb) => {
+    const safeName = file.originalname.replace(/\s+/g, "-");
+    cb(null, `${Date.now()}-${safeName}`);
   },
 });
 
-const fileFilter = (req, file, cb) => {
-  const fileType = path.extname(file.originalname).toLowerCase();
-
-  if (fileType === ".pdf") {
-    cb(null, true);
-  } else {
-    cb(new Error("Only PDF files are allowed"), false);
-  }
-};
-
 const upload = multer({
   storage,
-  fileFilter,
   limits: {
-    fileSize: 2 * 1024 * 1024,
+    fileSize: 10 * 1024 * 1024,
+  },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype !== "application/pdf") {
+      return cb(new Error("Only PDF files are allowed"));
+    }
+
+    cb(null, true);
   },
 });
 
