@@ -9,87 +9,99 @@ import {
 
 import ScoreDonut from "./ScoreDonut";
 
+const headFont = "'Space Grotesk','Inter Tight','Helvetica Neue',Arial,sans-serif";
+const monoFont = "'JetBrains Mono','IBM Plex Mono','SFMono-Regular',Menlo,Consolas,monospace";
+
+// Corner-bracket frame — used only on the two focal score panels
+const Bracket = ({ className }) => (
+  <span
+    className={`absolute w-3 h-3 border-[#FF8A3D] ${className}`}
+    aria-hidden="true"
+  />
+);
+
+const ScanPanel = ({ children }) => (
+  <div className="relative bg-[#14171A] border border-[#262B30] rounded-md p-7">
+    <Bracket className="top-0 left-0 border-t-2 border-l-2 -translate-x-px -translate-y-px" />
+    <Bracket className="top-0 right-0 border-t-2 border-r-2 translate-x-px -translate-y-px" />
+    <Bracket className="bottom-0 left-0 border-b-2 border-l-2 -translate-x-px translate-y-px" />
+    <Bracket className="bottom-0 right-0 border-b-2 border-r-2 translate-x-px translate-y-px" />
+    {children}
+  </div>
+);
+
 const AnalysisDashboard = ({ analysis }) => {
   if (!analysis) return null;
 
-  const sectionCard =
-    "card p-8 space-y-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm";
+  const card = "bg-[#14171A] border border-[#262B30] rounded-md p-7 space-y-6";
+  const listItem = "flex gap-3 p-4 rounded-sm bg-[#1C2024] border border-[#262B30]";
 
-  const listItem =
-    "flex gap-3 p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:shadow-md transition-all";
-
-  const sectionHeader = "flex items-center gap-4";
+  const SectionHeader = ({ icon: Icon, index, title, subtitle }) => (
+    <div className="flex items-center gap-4">
+      <div className="w-10 h-10 rounded-sm border border-[#262B30] bg-[#1C2024] flex items-center justify-center shrink-0">
+        <Icon className="text-[#FF8A3D] text-base" />
+      </div>
+      <div className="flex-1">
+        <div className="flex items-center gap-2">
+          {index && (
+            <span className="text-xs text-[#4A5158]" style={{ fontFamily: monoFont }}>
+              {index}
+            </span>
+          )}
+          <h3 className="text-base text-[#E8E6E1]" style={{ fontFamily: headFont, fontWeight: 600 }}>
+            {title}
+          </h3>
+        </div>
+        <p className="text-sm text-[#7A828A]">{subtitle}</p>
+      </div>
+    </div>
+  );
 
   return (
-    <div className="space-y-10">
-      {/* Header */}
-      <div className="space-y-3">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
-          <span className="inline-block w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-          <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">
-            Analysis Complete
-          </span>
-        </div>
-
-        <h2 className="text-4xl font-black text-slate-900 dark:text-white">
-          Resume Analysis Report
+    <div className="space-y-8">
+      <div className="space-y-2">
+        <h2 className="text-2xl text-[#E8E6E1]" style={{ fontFamily: headFont, fontWeight: 700 }}>
+          Resume analysis report
         </h2>
-
-        <p className="text-lg text-slate-600 dark:text-slate-400">
-          Detailed insights and actionable recommendations to improve your
-          resume.
+        <p className="text-[#7A828A]">
+          Detailed insights and actionable recommendations to improve your resume.
         </p>
       </div>
 
-      {/* Score Donuts */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <ScoreDonut title="Overall Score" score={analysis.overallScore} />
-        <ScoreDonut title="ATS Score" score={analysis.atsScore} />
+      {/* Score dials */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <ScanPanel>
+          <ScoreDonut title="Overall score" score={analysis.overallScore} />
+        </ScanPanel>
+        <ScanPanel>
+          <ScoreDonut title="ATS score" score={analysis.atsScore} />
+        </ScanPanel>
       </div>
 
-      {/* Extra Scores */}
-      <div className={sectionCard}>
-        <div className={sectionHeader}>
-          <div className="p-4 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
-            <FiTrendingUp className="text-blue-600 dark:text-blue-400 text-3xl" />
-          </div>
+      {/* Detailed breakdown */}
+      <div className={card}>
+        <SectionHeader icon={FiTrendingUp} index="01" title="Detailed score breakdown" subtitle="Category-wise resume performance." />
 
-          <div>
-            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
-              Detailed Score Breakdown
-            </h3>
-            <p className="text-sm text-slate-600 dark:text-slate-400">
-              Category-wise resume performance.
-            </p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {[
-            ["Skills Score", analysis.skillsScore],
-            ["Project Score", analysis.projectScore],
-            ["Experience Score", analysis.experienceScore],
-            ["Education Score", analysis.educationScore],
-            ["Formatting Score", analysis.formattingScore],
+            ["Skills score", analysis.skillsScore],
+            ["Project score", analysis.projectScore],
+            ["Experience score", analysis.experienceScore],
+            ["Education score", analysis.educationScore],
+            ["Formatting score", analysis.formattingScore],
           ].map(([label, score], index) => (
-            <div
-              key={index}
-              className="p-5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700"
-            >
-              <div className="flex justify-between mb-2">
-                <p className="font-semibold text-slate-700 dark:text-slate-300">
-                  {label}
-                </p>
-                <p className="font-bold text-slate-900 dark:text-white">
+            <div key={index} className="p-4 rounded-sm bg-[#1C2024] border border-[#262B30]">
+              <div className="flex justify-between mb-2 text-sm">
+                <span className="text-[#C7C1B4]">{label}</span>
+                <span className="text-[#E8E6E1]" style={{ fontFamily: monoFont }}>
                   {score || 0}%
-                </p>
+                </span>
               </div>
-
-              <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3 overflow-hidden">
+              <div className="w-full h-1 bg-[#262B30] overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-blue-500 to-purple-500"
-                  style={{ width: `${score || 0}%` }}
-                ></div>
+                  className="h-full bg-[#FF8A3D]"
+                  style={{ width: `${score || 0}%`, transition: "width 0.6s ease-out" }}
+                />
               </div>
             </div>
           ))}
@@ -97,89 +109,40 @@ const AnalysisDashboard = ({ analysis }) => {
       </div>
 
       {/* Strengths */}
-      <div className={sectionCard}>
-        <div className={sectionHeader}>
-          <div className="p-4 bg-green-100 dark:bg-green-900/30 rounded-xl">
-            <FiCheckCircle className="text-green-600 dark:text-green-400 text-3xl" />
-          </div>
-
-          <div>
-            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
-              Strengths
-            </h3>
-            <p className="text-sm text-slate-600 dark:text-slate-400">
-              What is working well in your resume.
-            </p>
-          </div>
-        </div>
-
-        <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className={card}>
+        <SectionHeader icon={FiCheckCircle} index="02" title="Strengths" subtitle="What's working well in your resume." />
+        <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {analysis.strengths?.map((item, index) => (
             <li key={index} className={listItem}>
-              <span className="text-green-600 dark:text-green-400 font-bold">
-                ✓
-              </span>
-              <span className="text-slate-700 dark:text-slate-300">
-                {item}
-              </span>
+              <FiCheckCircle className="text-[#5FD3A0] mt-0.5 shrink-0" size={15} />
+              <span className="text-[#C7C1B4] text-sm">{item}</span>
             </li>
           ))}
         </ul>
       </div>
 
       {/* Weaknesses */}
-      <div className={sectionCard}>
-        <div className={sectionHeader}>
-          <div className="p-4 bg-red-100 dark:bg-red-900/30 rounded-xl">
-            <FiAlertCircle className="text-red-600 dark:text-red-400 text-3xl" />
-          </div>
-
-          <div>
-            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
-              Areas for Improvement
-            </h3>
-            <p className="text-sm text-slate-600 dark:text-slate-400">
-              Focus on these points to strengthen your resume.
-            </p>
-          </div>
-        </div>
-
-        <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className={card}>
+        <SectionHeader icon={FiAlertCircle} index="03" title="Areas for improvement" subtitle="Focus on these points to strengthen your resume." />
+        <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {analysis.weaknesses?.map((item, index) => (
             <li key={index} className={listItem}>
-              <span className="text-red-600 dark:text-red-400 font-bold">
-                ⚠
-              </span>
-              <span className="text-slate-700 dark:text-slate-300">
-                {item}
-              </span>
+              <FiAlertCircle className="text-[#FF5D5D] mt-0.5 shrink-0" size={15} />
+              <span className="text-[#C7C1B4] text-sm">{item}</span>
             </li>
           ))}
         </ul>
       </div>
 
-      {/* Missing Skills */}
-      <div className={sectionCard}>
-        <div className={sectionHeader}>
-          <div className="p-4 bg-amber-100 dark:bg-amber-900/30 rounded-xl">
-            <FiInfo className="text-amber-600 dark:text-amber-400 text-3xl" />
-          </div>
-
-          <div>
-            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
-              Missing Skills
-            </h3>
-            <p className="text-sm text-slate-600 dark:text-slate-400">
-              High-demand skills you can add.
-            </p>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap gap-3">
+      {/* Missing skills */}
+      <div className={card}>
+        <SectionHeader icon={FiInfo} index="04" title="Missing skills" subtitle="High-demand skills you can add." />
+        <div className="flex flex-wrap gap-2">
           {analysis.missingSkills?.map((skill, index) => (
             <span
               key={index}
-              className="px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 text-sm font-semibold"
+              className="px-3 py-1 rounded-sm bg-[#1C2024] text-[#FF5D5D] border border-[#262B30] text-sm"
+              style={{ fontFamily: monoFont }}
             >
               + {skill}
             </span>
@@ -187,86 +150,43 @@ const AnalysisDashboard = ({ analysis }) => {
         </div>
       </div>
 
-      {/* Improvement Suggestions */}
+      {/* Improvement suggestions */}
       {analysis.improvementSuggestions?.length > 0 && (
-        <div className={sectionCard}>
-          <div className={sectionHeader}>
-            <div className="p-4 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
-              <FiTrendingUp className="text-blue-600 dark:text-blue-400 text-3xl" />
-            </div>
-
-            <div>
-              <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
-                Improvement Suggestions
-              </h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
-                Practical actions to improve your resume.
-              </p>
-            </div>
-          </div>
-
-          <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className={card}>
+          <SectionHeader icon={FiTrendingUp} index="05" title="Improvement suggestions" subtitle="Practical actions to improve your resume." />
+          <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {analysis.improvementSuggestions.map((item, index) => (
               <li key={index} className={listItem}>
-                <span className="text-blue-600 dark:text-blue-400 font-bold">
-                  →
+                <span className="text-[#FF8A3D] mt-0.5 shrink-0" style={{ fontFamily: monoFont }}>
+                  {String(index + 1).padStart(2, "0")}
                 </span>
-                <span className="text-slate-700 dark:text-slate-300">
-                  {item}
-                </span>
+                <span className="text-[#C7C1B4] text-sm">{item}</span>
               </li>
             ))}
           </ul>
         </div>
       )}
 
-      {/* Suggested Summary */}
+      {/* Suggested summary */}
       {analysis.suggestedSummary && (
-        <div className={sectionCard}>
-          <div className={sectionHeader}>
-            <div className="p-4 bg-purple-100 dark:bg-purple-900/30 rounded-xl">
-              <FiBookmark className="text-purple-600 dark:text-purple-400 text-3xl" />
-            </div>
-
-            <div>
-              <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
-                Suggested Professional Summary
-              </h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
-                AI-optimized summary for your resume.
-              </p>
-            </div>
-          </div>
-
-          <p className="text-base md:text-lg text-slate-800 dark:text-slate-200 leading-relaxed p-6 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+        <div className={card}>
+          <SectionHeader icon={FiBookmark} index="06" title="Suggested professional summary" subtitle="AI-optimized summary for your resume." />
+          <p className="text-[#C7C1B4] leading-relaxed p-5 bg-[#1C2024] rounded-sm border border-[#262B30]">
             {analysis.suggestedSummary}
           </p>
         </div>
       )}
 
-      {/* Recommended Keywords */}
+      {/* Recommended keywords */}
       {analysis.recommendedKeywords?.length > 0 && (
-        <div className={sectionCard}>
-          <div className={sectionHeader}>
-            <div className="p-4 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl">
-              <FiTarget className="text-indigo-600 dark:text-indigo-400 text-3xl" />
-            </div>
-
-            <div>
-              <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
-                Recommended Keywords
-              </h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
-                ATS-friendly keywords to include.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap gap-3">
+        <div className={card}>
+          <SectionHeader icon={FiTarget} index="07" title="Recommended keywords" subtitle="ATS-friendly keywords to include." />
+          <div className="flex flex-wrap gap-2">
             {analysis.recommendedKeywords.map((keyword, index) => (
               <span
                 key={index}
-                className="px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 text-sm font-semibold"
+                className="px-3 py-1 rounded-sm bg-[#1C2024] text-[#FF8A3D] border border-[#262B30] text-sm"
+                style={{ fontFamily: monoFont }}
               >
                 {keyword}
               </span>

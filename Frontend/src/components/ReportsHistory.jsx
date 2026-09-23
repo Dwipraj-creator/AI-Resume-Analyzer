@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { FiClock, FiChevronRight, FiTrash2 } from "react-icons/fi";
 import { getReports, deleteReport } from "../api/resumeApi";
 
+const headFont = "'Space Grotesk','Inter Tight','Helvetica Neue',Arial,sans-serif";
+const monoFont = "'JetBrains Mono','IBM Plex Mono','SFMono-Regular',Menlo,Consolas,monospace";
+
 const ReportsHistory = ({ setAnalysis }) => {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,46 +25,31 @@ const ReportsHistory = ({ setAnalysis }) => {
     fetchReports();
   }, []);
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
+  const formatDate = (dateString) =>
+    new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",
     });
-  };
 
   const getStatus = (score) => {
     if (score >= 80) return "Excellent";
     if (score >= 60) return "Good";
-    return "Needs Work";
+    return "Needs work";
   };
 
-  const getStatusClass = (score) => {
-    if (score >= 80) {
-      return "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800";
-    }
-
-    if (score >= 60) {
-      return "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-800";
-    }
-
-    return "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800";
-  };
-
-  const getCircleColor = (score) => {
-    if (score >= 80) return "stroke-green-500";
-    if (score >= 60) return "stroke-amber-500";
-    return "stroke-red-500";
+  const getTierColor = (score) => {
+    if (score >= 80) return "#5FD3A0";
+    if (score >= 60) return "#FF8A3D";
+    return "#FF5D5D";
   };
 
   const handleDelete = async (id) => {
     try {
       const confirmDelete = window.confirm("Delete this report?");
-
       if (!confirmDelete) return;
 
       await deleteReport(id);
-
       setReports((prev) => prev.filter((report) => report._id !== id));
     } catch (error) {
       console.log(error);
@@ -70,14 +58,13 @@ const ReportsHistory = ({ setAnalysis }) => {
 
   if (loading) {
     return (
-      <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-10 shadow-sm">
+      <div className="rounded-md bg-[#14171A] border border-[#262B30] p-8">
         <div className="animate-pulse space-y-5">
-          <div className="h-8 bg-slate-200 dark:bg-slate-800 rounded-xl w-1/3"></div>
-          <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded-xl w-1/2"></div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
-            <div className="h-56 bg-slate-100 dark:bg-slate-800 rounded-2xl"></div>
-            <div className="h-56 bg-slate-100 dark:bg-slate-800 rounded-2xl"></div>
+          <div className="h-6 bg-[#1C2024] rounded-sm w-1/3" />
+          <div className="h-4 bg-[#1C2024] rounded-sm w-1/2" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-4">
+            <div className="h-44 bg-[#1C2024] rounded-sm" />
+            <div className="h-44 bg-[#1C2024] rounded-sm" />
           </div>
         </div>
       </div>
@@ -85,112 +72,96 @@ const ReportsHistory = ({ setAnalysis }) => {
   }
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-        <div className="space-y-2">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
-            <FiClock className="text-blue-600 dark:text-blue-400" />
-            <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">
-              Resume History
-            </span>
-          </div>
-
-          <h2 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white">
-            Previous Reports
-          </h2>
-
-          <p className="text-slate-600 dark:text-slate-400">
-            {reports.length > 0
-              ? `You have ${reports.length} ${
-                  reports.length === 1 ? "analysis" : "analyses"
-                } saved.`
-              : "No reports yet. Upload a resume to get started."}
-          </p>
+    <div className="space-y-7">
+      <div className="space-y-2">
+        <div className="inline-flex items-center gap-2 text-[#7A828A] text-sm">
+          <FiClock size={13} />
+          <span style={{ fontFamily: monoFont }}>report_history</span>
         </div>
+
+        <h2 className="text-2xl text-[#E8E6E1]" style={{ fontFamily: headFont, fontWeight: 700 }}>
+          Previous reports
+        </h2>
+
+        <p className="text-[#7A828A]">
+          {reports.length > 0
+            ? `${reports.length} ${reports.length === 1 ? "analysis" : "analyses"} saved.`
+            : "No reports yet. Upload a resume to get started."}
+        </p>
       </div>
 
       {reports.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {reports.map((report) => (
             <div
               key={report._id}
               onClick={() => setAnalysis(report)}
-              className="group cursor-pointer rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+              className="group cursor-pointer rounded-md bg-[#14171A] border border-[#262B30] p-6 hover:border-[#FF8A3D]/40 transition-colors duration-200"
             >
-              <div className="flex items-start justify-between gap-5 mb-6">
+              <div className="flex items-start justify-between gap-5 mb-5">
                 <div className="min-w-0">
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 flex items-center gap-2">
+                  <h3
+                    className="text-[#E8E6E1] group-hover:text-[#FF8A3D] transition-colors line-clamp-2 flex items-center gap-1.5"
+                    style={{ fontFamily: monoFont, fontSize: 14 }}
+                  >
                     {report.fileName}
-                    <FiChevronRight className="shrink-0 text-slate-400 group-hover:translate-x-1 transition-transform" />
+                    <FiChevronRight
+                      className="shrink-0 text-[#4A5158] group-hover:translate-x-0.5 transition-transform"
+                      size={14}
+                    />
                   </h3>
 
                   {report.createdAt && (
-                    <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-                      Created on {formatDate(report.createdAt)}
+                    <p className="mt-1.5 text-sm text-[#7A828A]">
+                      Created {formatDate(report.createdAt)}
                     </p>
                   )}
                 </div>
 
-                <div className="relative w-20 h-20 shrink-0">
-                  <svg
-                    className="w-full h-full -rotate-90"
-                    viewBox="0 0 100 100"
-                  >
+                <div className="relative w-16 h-16 shrink-0">
+                  <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="44" fill="none" stroke="#262B30" strokeWidth="6" />
                     <circle
                       cx="50"
                       cy="50"
                       r="44"
-                      className="fill-none stroke-slate-200 dark:stroke-slate-800"
-                      strokeWidth="8"
-                    />
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="44"
-                      className={`fill-none ${getCircleColor(
-                        report.overallScore
-                      )}`}
-                      strokeWidth="8"
-                      strokeDasharray={`${
-                        (report.overallScore || 0) * 2.76
-                      } 276`}
+                      fill="none"
+                      stroke={getTierColor(report.overallScore)}
+                      strokeWidth="6"
+                      strokeDasharray={`${(report.overallScore || 0) * 2.76} 276`}
                       strokeLinecap="round"
                     />
                   </svg>
-
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-xl font-black text-slate-900 dark:text-white">
+                    <span className="text-sm" style={{ fontFamily: monoFont }}>
                       {report.overallScore || 0}%
                     </span>
                   </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 mb-5">
-                <div className="rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4">
-                  <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1">
-                    Overall
-                  </p>
-                  <p className="text-2xl font-black text-slate-900 dark:text-white">
+              <div className="grid grid-cols-2 gap-3 mb-5">
+                <div className="rounded-sm bg-[#1C2024] border border-[#262B30] p-3">
+                  <p className="text-xs text-[#7A828A] mb-1">Overall</p>
+                  <p className="text-lg text-[#E8E6E1]" style={{ fontFamily: monoFont }}>
                     {report.overallScore || 0}%
                   </p>
                 </div>
-
-                <div className="rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4">
-                  <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1">
-                    ATS
-                  </p>
-                  <p className="text-2xl font-black text-slate-900 dark:text-white">
+                <div className="rounded-sm bg-[#1C2024] border border-[#262B30] p-3">
+                  <p className="text-xs text-[#7A828A] mb-1">ATS</p>
+                  <p className="text-lg text-[#E8E6E1]" style={{ fontFamily: monoFont }}>
                     {report.atsScore || 0}%
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between pt-5 border-t border-slate-200 dark:border-slate-800">
+              <div className="flex items-center justify-between pt-4 border-t border-[#262B30]">
                 <span
-                  className={`px-3 py-1 rounded-full border text-sm font-semibold ${getStatusClass(
-                    report.overallScore
-                  )}`}
+                  className="px-3 py-1 rounded-sm border text-sm"
+                  style={{
+                    color: getTierColor(report.overallScore),
+                    borderColor: `${getTierColor(report.overallScore)}40`,
+                  }}
                 >
                   {getStatus(report.overallScore)}
                 </span>
@@ -200,28 +171,26 @@ const ReportsHistory = ({ setAnalysis }) => {
                     e.stopPropagation();
                     handleDelete(report._id);
                   }}
-                  className="p-2 rounded-xl bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800 dark:hover:bg-red-900/30 transition"
+                  className="p-2 rounded-sm bg-[#1C2024] text-[#7A828A] hover:text-[#FF5D5D] border border-[#262B30] transition-colors"
                   title="Delete report"
                 >
-                  <FiTrash2 size={17} />
+                  <FiTrash2 size={15} />
                 </button>
               </div>
             </div>
           ))}
         </div>
       ) : (
-        <div className="rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 p-14 text-center shadow-sm">
-          <div className="mx-auto mb-6 w-fit rounded-2xl bg-slate-100 dark:bg-slate-800 p-5">
-            <FiClock className="text-slate-500 dark:text-slate-400 text-4xl" />
+        <div className="rounded-md border border-dashed border-[#262B30] bg-[#14171A] p-14 text-center">
+          <div className="mx-auto mb-6 w-fit rounded-full bg-[#1C2024] border border-[#262B30] p-5">
+            <FiClock className="text-[#7A828A] text-2xl" />
           </div>
 
-          <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">
-            No Reports Yet
+          <h3 className="text-lg text-[#E8E6E1] mb-2" style={{ fontFamily: headFont, fontWeight: 600 }}>
+            No reports yet
           </h3>
 
-          <p className="text-slate-600 dark:text-slate-400">
-            Upload and analyze your first resume to see it here.
-          </p>
+          <p className="text-[#7A828A]">Upload and analyze your first resume to see it here.</p>
         </div>
       )}
     </div>

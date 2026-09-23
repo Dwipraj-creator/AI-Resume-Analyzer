@@ -4,7 +4,9 @@ import { ThemeProvider } from "./context/ThemeContext";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
+
 import ProtectedRoute from "./components/ProtectedRoute";
+import ReportsPage from "./pages/ReportsPage";
 
 function AppRoutes() {
   return (
@@ -17,6 +19,15 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <Home />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/reports"
+        element={
+          <ProtectedRoute>
+            <ReportsPage />
           </ProtectedRoute>
         }
       />

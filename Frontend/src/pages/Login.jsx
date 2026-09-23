@@ -1,27 +1,24 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FiLogIn, FiMail, FiLock, FiAlertCircle,FiEye,FiEyeOff } from "react-icons/fi";
+import { FiLogIn, FiMail, FiLock, FiAlertCircle, FiEye, FiEyeOff } from "react-icons/fi";
 
 import { loginUser } from "../api/authApi";
 import { useAuth } from "../context/AuthContext";
+
+const headFont = "'Space Grotesk','Inter Tight','Helvetica Neue',Arial,sans-serif";
+const monoFont = "'JetBrains Mono','IBM Plex Mono','SFMono-Regular',Menlo,Consolas,monospace";
 
 const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
@@ -30,11 +27,8 @@ const [showPassword, setShowPassword] = useState(false);
 
     try {
       setLoading(true);
-
       const result = await loginUser(formData);
-
       login(result.user, result.token);
-
       navigate("/");
     } catch (error) {
       setError(error.response?.data?.message || "Login failed");
@@ -43,85 +37,92 @@ const [showPassword, setShowPassword] = useState(false);
     }
   };
 
+  const inputClasses =
+    "w-full rounded-sm border border-[#262B30] bg-[#1C2024] py-3.5 pl-11 pr-4 text-[#E8E6E1] placeholder:text-[#4A5158] outline-none focus:border-[#FF8A3D]/60 transition-colors";
+
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#0A0C0E] flex items-center justify-center px-4">
       <div className="w-full max-w-md">
-        <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
-            <FiLogIn className="text-white text-2xl" />
+        <div className="mb-8">
+          <div className="mb-5 w-11 h-11 rounded-sm bg-[#14171A] border border-[#262B30] flex items-center justify-center">
+            <FiLogIn className="text-[#FF8A3D] text-lg" />
           </div>
 
-          <h1 className="text-4xl font-black text-slate-900 dark:text-white">
-            Welcome Back
+          <h1 className="text-2xl text-[#E8E6E1]" style={{ fontFamily: headFont, fontWeight: 700 }}>
+            Welcome back
           </h1>
 
-          <p className="mt-3 text-slate-600 dark:text-slate-400">
-            Login to analyze resumes and manage your reports.
+          <p className="mt-2 text-[#7A828A] text-sm">
+            Log in to analyze resumes and manage your reports.
           </p>
         </div>
 
-        <div className="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 shadow-xl">
+        <div className="rounded-md bg-[#14171A] border border-[#262B30] p-8">
           {error && (
-            <div className="mb-5 flex gap-3 rounded-2xl border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 p-4">
-              <FiAlertCircle className="text-red-600 dark:text-red-400 text-xl shrink-0 mt-0.5" />
-              <p className="text-sm font-semibold text-red-700 dark:text-red-300">
-                {error}
-              </p>
+            <div className="mb-5 flex gap-3 rounded-sm border border-[#FF5D5D]/40 bg-[#1C2024] p-4">
+              <FiAlertCircle className="text-[#FF5D5D] text-lg shrink-0 mt-0.5" />
+              <p className="text-sm text-[#E8E6E1]">{error}</p>
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-sm font-bold mb-2 text-slate-700 dark:text-slate-300">
-                Email Address
+              <label className="block text-xs text-[#7A828A] mb-2" style={{ fontFamily: monoFont }}>
+                email_address
               </label>
-
               <div className="relative">
-                <FiMail size={18} />
-
+                <FiMail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#4A5158]" />
                 <input
                   type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 py-4 pl-12 pr-4 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
+                  className={inputClasses}
                   placeholder="you@example.com"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-bold mb-2 text-slate-700 dark:text-slate-300">
-                Password
+              <label className="block text-xs text-[#7A828A] mb-2" style={{ fontFamily: monoFont }}>
+                password
               </label>
-
               <div className="relative">
-                <FiLock size={18} />
-
+                <FiLock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#4A5158]" />
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
                   required
-  className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 py-4 pl-14 pr-4 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"                  placeholder="Enter your password"
+                  className={`${inputClasses} pr-11`}
+                  placeholder="Enter your password"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#4A5158] hover:text-[#7A828A] transition-colors"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <FiEyeOff size={16} /> : <FiEye size={16} />}
+                </button>
               </div>
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-4 text-white font-bold text-lg shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all disabled:from-slate-400 disabled:to-slate-500 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+              className="w-full rounded-sm bg-[#FF8A3D] px-6 py-3.5 text-[#0A0C0E] text-base hover:bg-[#FFA05E] transition-colors disabled:bg-[#262B30] disabled:text-[#4A5158] disabled:cursor-not-allowed"
+              style={{ fontFamily: headFont, fontWeight: 600 }}
             >
-              {loading ? "Logging in..." : "Login"}
+              {loading ? "Logging in..." : "Log in"}
             </button>
           </form>
 
-          <p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
+          <p className="mt-6 text-center text-sm text-[#7A828A]">
             Don&apos;t have an account?{" "}
-            <Link to="/register" className="font-bold text-blue-600 hover:text-blue-700">
+            <Link to="/register" className="text-[#FF8A3D] hover:text-[#FFA05E] transition-colors">
               Register
             </Link>
           </p>

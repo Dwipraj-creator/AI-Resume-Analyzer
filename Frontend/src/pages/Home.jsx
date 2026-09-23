@@ -1,101 +1,48 @@
-import { useState } from "react";
-import { FiMoon, FiSun, FiUploadCloud, FiLogOut } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 
 import ResumeUpload from "../components/ResumeUpload";
-import AnalysisDashboard from "../components/AnalysisDashboard";
-import ReportsHistory from "../components/ReportsHistory";
-import { useTheme } from "../context/ThemeContext";
-import { useAuth } from "../context/AuthContext";
+import AnalysisDashboard from "../components/AnalysisDAshboard";
+import Navbar from "../components/Navbar";
+
+const headFont = "'Space Grotesk','Inter Tight','Helvetica Neue',Arial,sans-serif";
+const monoFont = "'JetBrains Mono','IBM Plex Mono','SFMono-Regular',Menlo,Consolas,monospace";
 
 const Home = () => {
   const [analysis, setAnalysis] = useState(null);
+  const location = useLocation();
 
-  const { isDark, toggleTheme } = useTheme();
-  const { logout, user } = useAuth();
-
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
-  };
+  // Picks up a report selected from the /reports page
+  useEffect(() => {
+    if (location.state?.analysis) {
+      setAnalysis(location.state.analysis);
+    }
+  }, [location.state]);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
-      <header className="sticky top-0 z-50 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-3 rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 shadow-lg shadow-blue-500/20">
-              <FiUploadCloud className="text-white text-2xl" />
-            </div>
+    <div className="min-h-screen bg-[#0A0C0E]">
+      <Navbar />
 
-            <div>
-              <h1 className="text-2xl font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                ResumePro
-              </h1>
-              <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold tracking-wide">
-                AI Resume Analyzer
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="hidden md:flex items-center gap-3 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-4 py-2">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 text-white flex items-center justify-center font-bold">
-                {user?.name?.charAt(0)?.toUpperCase() || "U"}
-              </div>
-
-              <div className="text-right">
-                <p className="text-sm font-bold text-slate-900 dark:text-white">
-                  {user?.name}
-                </p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
-                  {user?.email}
-                </p>
-              </div>
-            </div>
-
-            <button
-              onClick={toggleTheme}
-              className="p-3 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition"
-              aria-label="Toggle theme"
-            >
-              {isDark ? <FiSun size={20} /> : <FiMoon size={20} />}
-            </button>
-
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800 dark:hover:bg-red-900/30 font-semibold transition"
-            >
-              <FiLogOut size={18} />
-              <span className="hidden sm:inline">Logout</span>
-            </button>
-          </div>
-        </div>
-      </header>
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {!analysis && (
-          <section className="text-center mb-14">
-            <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
-              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-              <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">
-                Powered by AI, n8n Automation & ATS Scoring
+          <section className="mb-10">
+            <div className="inline-flex items-center gap-2 mb-4 px-3 py-1 rounded-sm bg-[#14171A] border border-[#262B30]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#FF8A3D]" />
+              <span className="text-xs text-[#7A828A]" style={{ fontFamily: monoFont }}>
+                ai · n8n automation · ats scoring
               </span>
             </div>
 
-            <h2 className="text-4xl sm:text-6xl font-black text-slate-900 dark:text-white mb-6 leading-tight">
-              Analyze and Optimize
-              <br />
-              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Your Resume
-              </span>
+            <h2
+              className="text-3xl sm:text-4xl text-[#E8E6E1] mb-3 leading-tight max-w-2xl"
+              style={{ fontFamily: headFont, fontWeight: 700 }}
+            >
+              Scan your resume for what's holding it back.
             </h2>
 
-            <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-              Upload your PDF resume and get ATS-style scores, missing skills,
-              improvement suggestions, and AI-generated keywords.
+            <p className="text-[#7A828A] max-w-xl">
+              Upload a PDF and get ATS-style scoring, missing skills, and AI-generated
+              improvements — below.
             </p>
           </section>
         )}
@@ -105,27 +52,19 @@ const Home = () => {
         </section>
 
         {analysis && (
-          <section className="mb-16">
+          <section>
             <AnalysisDashboard analysis={analysis} />
           </section>
         )}
-
-        <section>
-          <ReportsHistory setAnalysis={setAnalysis} />
-        </section>
       </main>
 
-      <footer className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+      <footer className="border-t border-[#262B30]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-sm text-[#7A828A]">
             © 2026 ResumePro. Built with React, Node.js, MongoDB, n8n and Gemini AI.
           </p>
-
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            Portfolio project by{" "}
-            <span className="font-semibold text-slate-700 dark:text-slate-300">
-              Dwipraj Dey
-            </span>
+          <p className="text-sm text-[#7A828A]">
+            Portfolio project by <span className="text-[#C7C1B4]">Dwipraj Dey</span>
           </p>
         </div>
       </footer>

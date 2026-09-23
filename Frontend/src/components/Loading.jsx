@@ -1,75 +1,58 @@
+import { FiFileText, FiCpu, FiBarChart2, FiCheckCircle } from "react-icons/fi";
+
+const headFont = "'Space Grotesk','Inter Tight','Helvetica Neue',Arial,sans-serif";
+const monoFont = "'JetBrains Mono','IBM Plex Mono','SFMono-Regular',Menlo,Consolas,monospace";
+
+const steps = [
+  { icon: FiFileText, label: "Extracting resume content" },
+  { icon: FiCpu, label: "Analyzing skills & experience" },
+  { icon: FiBarChart2, label: "Calculating ATS score" },
+  { icon: FiCheckCircle, label: "Preparing final report" },
+];
+
 const Loading = () => {
   return (
-    <div className="flex flex-col items-center justify-center py-24">
-      {/* Main Card */}
-      <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-xl p-8">
-
-        {/* Animated Circle */}
-        <div className="flex justify-center mb-8">
-          <div className="relative">
-            <div className="w-24 h-24 rounded-full border-4 border-slate-200 dark:border-slate-700"></div>
-
-            <div className="absolute inset-0 w-24 h-24 rounded-full border-4 border-transparent border-t-blue-500 border-r-purple-500 animate-spin"></div>
-
+    <div className="flex flex-col items-center justify-center py-20">
+      <div className="w-full max-w-md bg-[#14171A] border border-[#262B30] rounded-md p-8">
+        <div className="flex justify-center mb-7">
+          <div className="relative w-20 h-20">
+            <div className="absolute inset-0 rounded-full border-[3px] border-[#262B30]" />
+            <div className="absolute inset-0 rounded-full border-[3px] border-transparent border-t-[#FF8A3D] animate-spin" />
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-3xl">🤖</span>
+              <FiCpu className="text-[#FF8A3D] text-2xl" />
             </div>
           </div>
         </div>
 
-        {/* Title */}
-        <div className="text-center mb-8">
-          <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-2">
-            AI Resume Analysis
+        <div className="text-center mb-8 space-y-1.5">
+          <h2 className="text-xl text-[#E8E6E1]" style={{ fontFamily: headFont, fontWeight: 600 }}>
+            Analyzing your resume
           </h2>
-
-          <p className="text-slate-600 dark:text-slate-400">
-            Generating ATS insights and recommendations...
+          <p className="text-[#7A828A] text-sm" style={{ fontFamily: monoFont }}>
+            est. 5–15s
           </p>
         </div>
 
-        {/* Pipeline Steps */}
-        <div className="space-y-4">
-
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800">
-            <span className="text-xl">📄</span>
-            <span className="font-medium text-slate-700 dark:text-slate-300">
-              Extracting Resume Content
-            </span>
-          </div>
-
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800">
-            <span className="text-xl">🤖</span>
-            <span className="font-medium text-slate-700 dark:text-slate-300">
-              AI Analyzing Skills & Experience
-            </span>
-          </div>
-
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800">
-            <span className="text-xl">📊</span>
-            <span className="font-medium text-slate-700 dark:text-slate-300">
-              Calculating ATS Score
-            </span>
-          </div>
-
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800">
-            <span className="text-xl">✨</span>
-            <span className="font-medium text-slate-700 dark:text-slate-300">
-              Preparing Final Report
-            </span>
-          </div>
-
+        <div className="space-y-2">
+          {steps.map(({ icon: Icon, label }, index) => (
+            <div
+              key={index}
+              className="flex items-center gap-3 p-3 rounded-sm bg-[#1C2024] border border-[#262B30]"
+            >
+              <span
+                className="text-xs text-[#4A5158] w-5 shrink-0"
+                style={{ fontFamily: monoFont }}
+              >
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <Icon className="text-[#FF8A3D] shrink-0" size={15} />
+              <span className="text-sm text-[#E8E6E1]">{label}</span>
+            </div>
+          ))}
         </div>
 
-        {/* Progress Bar */}
-        <div className="mt-8">
-          <div className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-            <div className="h-full w-1/2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-pulse"></div>
-          </div>
-
-          <p className="text-center text-sm text-slate-500 dark:text-slate-400 mt-3">
-            This usually takes 5–15 seconds
-          </p>
+        <div className="mt-7 w-full h-[3px] bg-[#262B30] overflow-hidden">
+          <div className="h-full w-2/3 bg-[#FF8A3D] animate-pulse" />
         </div>
       </div>
     </div>
