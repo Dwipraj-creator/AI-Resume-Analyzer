@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
 import ResumeUpload from "../components/ResumeUpload";
-import AnalysisDashboard from "../components/AnalysisDAshboard";
 import Navbar from "../components/Navbar";
+import AnalysisDashboard from"../components/AnalysisDashboard"
 
 const headFont = "'Space Grotesk','Inter Tight','Helvetica Neue',Arial,sans-serif";
 const monoFont = "'JetBrains Mono','IBM Plex Mono','SFMono-Regular',Menlo,Consolas,monospace";
