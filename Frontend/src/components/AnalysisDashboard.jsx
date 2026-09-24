@@ -5,9 +5,12 @@ import {
   FiTarget,
   FiInfo,
   FiBookmark,
+  FiDownload,
 } from "react-icons/fi";
 
 import ScoreDonut from "./ScoreDonut";
+import { generateResumeReportPdf } from "../utils/ExportResumeReportPdf"
+import { useToast } from "../context/ToastContext";
 
 const headFont = "'Space Grotesk','Inter Tight','Helvetica Neue',Arial,sans-serif";
 const monoFont = "'JetBrains Mono','IBM Plex Mono','SFMono-Regular',Menlo,Consolas,monospace";
@@ -31,7 +34,21 @@ const ScanPanel = ({ children }) => (
 );
 
 const AnalysisDashboard = ({ analysis }) => {
+  const { showToast } = useToast();
+
   if (!analysis) return null;
+
+  const handleExport = () => {
+    try {
+      const baseName = analysis.fileName
+        ? analysis.fileName.replace(/\.pdf$/i, "")
+        : "resume";
+      generateResumeReportPdf(analysis, `${baseName}-analysis-report.pdf`);
+      showToast("Report downloaded.", "success");
+    } catch (error) {
+      showToast("Couldn't generate the PDF. Please try again.", "error");
+    }
+  };
 
   const card = "bg-[#14171A] border border-[#262B30] rounded-md p-7 space-y-6";
   const listItem = "flex gap-3 p-4 rounded-sm bg-[#1C2024] border border-[#262B30]";
@@ -59,13 +76,23 @@ const AnalysisDashboard = ({ analysis }) => {
 
   return (
     <div className="space-y-8">
-      <div className="space-y-2">
-        <h2 className="text-2xl text-[#E8E6E1]" style={{ fontFamily: headFont, fontWeight: 700 }}>
-          Resume analysis report
-        </h2>
-        <p className="text-[#7A828A]">
-          Detailed insights and actionable recommendations to improve your resume.
-        </p>
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div className="space-y-2">
+          <h2 className="text-2xl text-[#E8E6E1]" style={{ fontFamily: headFont, fontWeight: 700 }}>
+            Resume analysis report
+          </h2>
+          <p className="text-[#7A828A]">
+            Detailed insights and actionable recommendations to improve your resume.
+          </p>
+        </div>
+
+        <button
+          onClick={handleExport}
+          className="flex items-center gap-2 px-4 py-2 rounded-sm bg-[#14171A] border border-[#262B30] text-[#C7C1B4] hover:text-[#FF8A3D] hover:border-[#FF8A3D]/40 transition-colors text-sm shrink-0"
+        >
+          <FiDownload size={15} />
+          Export PDF
+        </button>
       </div>
 
       {/* Score dials */}

@@ -1,12 +1,12 @@
 import { Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "./context/ThemeContext";
+import { ToastProvider } from "./context/ToastContext";
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
-
-import ProtectedRoute from "./components/ProtectedRoute";
 import ReportsPage from "./pages/ReportsPage";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function AppRoutes() {
   return (
@@ -38,7 +38,9 @@ function AppRoutes() {
 export default function App() {
   return (
     <ThemeProvider>
-      <AppRoutes />
+      <ToastProvider>
+        <AppRoutes />
+      </ToastProvider>
     </ThemeProvider>
   );
 }

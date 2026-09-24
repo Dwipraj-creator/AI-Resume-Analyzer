@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { FiClock, FiChevronRight, FiTrash2 } from "react-icons/fi";
 import { getReports, deleteReport } from "../api/resumeApi";
+import { useToast } from "../context/ToastContext";
+import ConfirmDialog from "./ConfirmDialog";
 
 const headFont = "'Space Grotesk','Inter Tight','Helvetica Neue',Arial,sans-serif";
 const monoFont = "'JetBrains Mono','IBM Plex Mono','SFMono-Regular',Menlo,Consolas,monospace";
@@ -8,13 +10,17 @@ const monoFont = "'JetBrains Mono','IBM Plex Mono','SFMono-Regular',Menlo,Consol
 const ReportsHistory = ({ setAnalysis }) => {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [pendingDeleteId, setPendingDeleteId] = useState(null);
+  const [deleting, setDeleting] = useState(false);
+
+  const { showToast } = useToast();
 
   const fetchReports = async () => {
     try {
       const result = await getReports();
       setReports(result.data || []);
     } catch (error) {
-      console.error("Failed to fetch reports:", error);
+      showToast("Couldn't load your reports. Please try again.", "error");
       setReports([]);
     } finally {
       setLoading(false);
@@ -44,15 +50,21 @@ const ReportsHistory = ({ setAnalysis }) => {
     return "#FF5D5D";
   };
 
-  const handleDelete = async (id) => {
-    try {
-      const confirmDelete = window.confirm("Delete this report?");
-      if (!confirmDelete) return;
+  const pendingReport = reports.find((r) => r._id === pendingDeleteId);
 
-      await deleteReport(id);
-      setReports((prev) => prev.filter((report) => report._id !== id));
+  const confirmDelete = async () => {
+    if (!pendingDeleteId) return;
+
+    try {
+      setDeleting(true);
+      await deleteReport(pendingDeleteId);
+      setReports((prev) => prev.filter((report) => report._id !== pendingDeleteId));
+      showToast("Report deleted.", "success");
     } catch (error) {
-      console.log(error);
+      showToast("Couldn't delete this report. Please try again.", "error");
+    } finally {
+      setDeleting(false);
+      setPendingDeleteId(null);
     }
   };
 
@@ -169,7 +181,7 @@ const ReportsHistory = ({ setAnalysis }) => {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleDelete(report._id);
+                    setPendingDeleteId(report._id);
                   }}
                   className="p-2 rounded-sm bg-[#1C2024] text-[#7A828A] hover:text-[#FF5D5D] border border-[#262B30] transition-colors"
                   title="Delete report"
@@ -193,6 +205,17 @@ const ReportsHistory = ({ setAnalysis }) => {
           <p className="text-[#7A828A]">Upload and analyze your first resume to see it here.</p>
         </div>
       )}
+
+      <ConfirmDialog
+        open={!!pendingDeleteId}
+        title="Delete this report?"
+        message={pendingReport ? `"${pendingReport.fileName}" will be permanently removed.` : undefined}
+        confirmLabel={deleting ? "Deleting..." : "Delete"}
+        cancelLabel="Cancel"
+        destructive
+        onConfirm={confirmDelete}
+        onCancel={() => setPendingDeleteId(null)}
+      />
     </div>
   );
 };
