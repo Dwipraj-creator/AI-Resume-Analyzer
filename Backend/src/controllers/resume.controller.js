@@ -3,6 +3,10 @@ const path = require("path");
 const ResumeAnalysis = require("../models/ResumeAnalysis");
 const extractPdfText = require("../utils/extractPdfText");
 const analyzeWithGemini = require("../utils/analyzeWithGemini");
+const redis = require("../config/redisClient");
+
+const REPORTS_CACHE_TTL = 300; // seconds — safety net in case invalidation is ever missed
+const getReportsCacheKey = (userId) => `reports:${userId}`;
 
 const getAnalysisFromN8n = async (fileName, resumeText) => {
   const n8nResponse = await axios.post(process.env.N8N_WEBHOOK_URL, {
@@ -89,6 +93,12 @@ if (process.env.AI_PROVIDER === "gemini") {
       recommendedKeywords: analysis.recommendedKeywords || [],
     });
 
+    // A new report exists now, so the cached list for this user is stale — clear it.
+    // Non-blocking: if Redis is unreachable, the upload still succeeds.
+    redis
+      .del(getReportsCacheKey(req.user._id))
+      .catch((error) => console.log("Redis invalidate failed:", error.message));
+
     res.status(201).json({
       message: "Resume analyzed successfully",
       data: savedAnalysis,
@@ -107,12 +117,36 @@ if (process.env.AI_PROVIDER === "gemini") {
 };
 
 const getAllReports = async (req, res) => {
+  const cacheKey = getReportsCacheKey(req.user._id);
+
+  // 1. Try the cache first
+  try {
+    const cached = await redis.get(cacheKey);
+    if (cached) {
+      return res.status(200).json({
+        message: "Reports fetched successfully",
+        data: JSON.parse(cached),
+      });
+    }
+  } catch (error) {
+    console.log("Redis read failed, falling back to database:", error.message);
+  }
+
+  // 2. Cache miss (or Redis unavailable) — fall back to MongoDB
   try {
     const reports = await ResumeAnalysis.find({
       user: req.user._id,
-    }).sort({
-      createdAt: -1,
-    });
+    })
+      .select("-resumeText")
+      .sort({
+        createdAt: -1,
+      })
+      .lean();
+
+    // 3. Populate the cache for next time — non-blocking, never fails the request
+    redis
+      .set(cacheKey, JSON.stringify(reports), "EX", REPORTS_CACHE_TTL)
+      .catch((error) => console.log("Redis write failed:", error.message));
 
     res.status(200).json({
       message: "Reports fetched successfully",
@@ -145,6 +179,11 @@ const deleteReport = async (req, res) => {
         message: "Report not found",
       });
     }
+
+    // A report is gone, so the cached list for this user is stale — clear it.
+    redis
+      .del(getReportsCacheKey(req.user._id))
+      .catch((error) => console.log("Redis invalidate failed:", error.message));
 
     res.status(200).json({
       message: "Report deleted successfully",

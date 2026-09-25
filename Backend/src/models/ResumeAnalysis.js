@@ -84,4 +84,8 @@ formattingScore: {
   { timestamps: true }
 );
 
+// Speeds up "find this user's reports, newest first" — exactly what getAllReports does.
+// Without it, Mongo scans every document in the collection on every request.
+resumeAnalysisSchema.index({ user: 1, createdAt: -1 });
+
 module.exports = mongoose.model("ResumeAnalysis", resumeAnalysisSchema);
