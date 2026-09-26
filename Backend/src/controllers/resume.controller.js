@@ -3,7 +3,7 @@ const path = require("path");
 const ResumeAnalysis = require("../models/ResumeAnalysis");
 const extractPdfText = require("../utils/extractPdfText");
 const analyzeWithGemini = require("../utils/analyzeWithGemini");
-const redis = require("../config/redisClient");
+const redis = require("../config/Redisclient");
 
 const REPORTS_CACHE_TTL = 300; // seconds — safety net in case invalidation is ever missed
 const getReportsCacheKey = (userId) => `reports:${userId}`;
